@@ -1,16 +1,58 @@
 const puppeteer = require('puppeteer');
 const path = require('path');
 
-const { crawlComment } = require('./crawlComment');
 const { goToMainPage } = require('./goToMainPage');
 const { crawlSubject } = require('./crawlSubject');
+const { crawlComment } = require('./crawlComment');
+const { getId } = require('./idMap');
 const { logger } = require('./logger');
 const { write } = require('./write');
 
 (async () => {
   const browser = await puppeteer.launch({ headless: true });
 
-  const skip = ['Przedmiotowy (prz)'];
+  const skip = [
+    'Administrowanie bazami danych (ABD)',
+    'Algorytmy i Struktury Danych - edux (ASD)',
+    'Aplikacje Baz Danych (APBD)',
+    'Automaty i Gramatyki (AUG)',
+    'Bezpieczeństwo Systemów Informatycznych (ANG) - 2012 (BSI)',
+    'Bezpieczeństwo Systemów Informatycznych (BSI)',
+    'Bezpieczeństwo Systemów Informatycznych 2018 (BSI_ANG)',
+    'BYT_P (BYT)',
+    'Edukacja dla bezpieczeństwa (EDB)',
+    'Fizyka k1 (FIZK1)',
+    'Fizyka k2 (FIZK2)',
+    'Fizyka Kolos1 (angielska) (FIZ)',
+    'Grafika Komputerowa (GRK)',
+    'Hurtownie danych i aplikacje OLAP (HUR)',
+    'Legal foundations of business (PPB)',
+    'Matematyka Dyskretna - edux - 2012 ZIMA (MAD2012A)',
+    'Matematyka Dyskretna 2020 (MAD)',
+
+    'Modelowanie i Analiza Systemów informacyjnych (MAS)',
+
+    'Narzędzia Sztucznej Inteligencji (NAI)',
+    'Prawne Podstawy Działalności Gospodarczej (PPB)',
+    'RBD egz 2016 zaoczne (RBDz)',
+    'Rachunkowość Podmiotow Gospodarczych (RPG)',
+    'Relacyjne Bazy Danych (RBD)',
+    'SYSTEM DOSKONALENIA KOMPETENCJI PROGRAMISTYCZNYCH (SDKP)',
+    'Sieci Komputerowe - ang - egzamin  (SKJ)',
+    'Sieci Komputerowe 1 (SKO1/SKJ)',
+    'Sieci Komputerowe 2 - edu - 2011 ZIMA (SKO2)',
+    'Systemy Baz Danych (SBD)',
+    'Systemy Baz Danych zima 2015 (SBD2015)',
+    'Systemy operacyjne (SOP)',
+    'Technika i Architektura Komputerów (TAK)',
+    'Technika i Architekture Komputerów (TAK) [ENG] (TAKE)',
+    'Technologie Internetu (TIN)',
+    'Technologie Internetu - 2017 (TIN)',
+    'Technologie i Platformy Chmury  Obliczeniowej (TPC)',
+    'Wstęp do systemów informacyjnych (WSI)',
+    'ZBD - pytania od studentów (ZBD)',
+    'Zarządzanie projektem informatycznym (ZPR) (ZPR)',
+  ];
 
   const context = await browser.createIncognitoBrowserContext();
   const page = await context.newPage();
@@ -62,17 +104,33 @@ const { write } = require('./write');
 
     subjectsData.push(questions);
 
-    const fileName = subject
-      .replace(/ /g, '_')
-      .replace(/\//g, '_');
+    // const fileName = subject
+    //   .replace(/ /g, '_')
+    //   .replace(/\//g, '_');
+
+    const data = {
+      title: subject,
+      id: getId(subject),
+      data: questions
+    }
 
     await write(
-      path.join(__dirname, '..', 'out', `${fileName}.json`),
-      JSON.stringify(questions, null, 2),
+      path.join(__dirname, '..', 'out', `${data.id}.json`),
+      JSON.stringify(data, null, 2),
     );
   }
 
-  // console.log(JSON.stringify(subjectsData, null, 2));
+  const indexData = {
+    pages: subjects.map((subject) => ({
+      title: subject,
+      id: getId(subject)
+    }))
+  }
+
+  await write(
+    path.join(__dirname, '..', 'out', `index.json`),
+    JSON.stringify(indexData, null, 2),
+  );
 
   browser.close();
 })();

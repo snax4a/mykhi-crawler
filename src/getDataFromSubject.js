@@ -1,8 +1,31 @@
 const getDataFromSubject = async (page) => {
   await page.waitForSelector('table');
 
-  const $table = await page.$('table');
-  const data = await $table.$$eval('tr.pyt, tr.odp', ($rows) => {
+  const $table = await page.$('table > tbody');
+  const data = await $table.$$eval(':scope > tr.pyt, :scope > tr.odp', ($rows, ...rest) => {
+    const cleanupField = ($questionElement) => {
+      const $commentImg = $questionElement
+        .querySelector('img[src="question.png"]')
+
+      if ($commentImg) {
+        $commentImg.remove()
+      }
+
+      Array.from($questionElement.querySelectorAll('[style]'))
+        .forEach($el => $el.removeAttribute('style'))
+
+      Array.from($questionElement.querySelectorAll('img[src]'))
+        .forEach($el => {
+          const src = $el.getAttribute('src');
+
+          if (src && src.startsWith('grafika/')) {
+            $el.setAttribute('src', `https://pja.mykhi.org/generatory2.0/${src}`);
+          }
+        });
+
+      return $questionElement.innerHTML.replace(/ - \(\d+\)/, '').trim();
+    }
+
     return $rows.reduce((acc, $row) => {
       if ($row.classList.contains('pyt')) {
         const $commentImg = $row
@@ -29,7 +52,8 @@ const getDataFromSubject = async (page) => {
         return [
           ...acc,
           {
-            question: $row.querySelectorAll('td')[1].innerHTML,
+            question: cleanupField($row.querySelectorAll('td')[1]),
+            id: commentId,
             comments: numberOfComments > 1
               ? commentId
               : null,
@@ -47,7 +71,7 @@ const getDataFromSubject = async (page) => {
             answers: [
               ...last.answers,
               {
-                answer: $row.querySelectorAll('td')[1].innerHTML,
+                answer: cleanupField($row.querySelectorAll('td')[1]),
                 correct: $row.querySelectorAll('td')[2].textContent === "+"
               }
             ]
