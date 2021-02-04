@@ -24,7 +24,14 @@ const transaction = Sentry.startTransaction({
 
 try {
   (async () => {
-    const browser = await puppeteer.launch({ headless: true });
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage'
+      ]
+    });
     const updatedAt = Date.now();
 
     const context = await browser.createIncognitoBrowserContext();
