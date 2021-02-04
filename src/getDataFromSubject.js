@@ -23,6 +23,20 @@ const getDataFromSubject = async (page) => {
           }
         });
 
+      const removeComments = ($parent) => {
+        (Array.isArray($parent) ? $parent : [$parent])
+          .map($p => Array.from($p.childNodes))
+          .flat()
+          .forEach(($node => {
+            if($node.nodeType === Node.COMMENT_NODE) {
+              $node.remove();
+            }
+          }))
+      }
+
+      removeComments($questionElement);
+      removeComments(Array.from($questionElement.querySelectorAll('p')));
+
       return $questionElement.innerHTML.replace(/ - \(\d+\)/, '').trim();
     }
 

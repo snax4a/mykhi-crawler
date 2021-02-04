@@ -1,6 +1,8 @@
+const chalk = require("chalk");
+
 const COLUMNS = parseInt(process.env.COLUMNS, 10) || 100;
 
-const logger = (subjects, i) => (header, body) => {
+const logger = (subjects, i) => (header, body, chalkFn = chalk.reset) => {
   const subjectsNumberHeaders = `[${i + 1} / ${subjects.length}]`;
   const contents = `${subjectsNumberHeaders} [${header}] ${body}`;
 
@@ -20,7 +22,7 @@ const logger = (subjects, i) => (header, body) => {
     )
   );
 
-  console.log(`${padStart} ${contents} ${padEnd}`);
+  console.log(chalkFn(`${padStart} ${contents} ${padEnd}`));
 }
 
 module.exports = { logger, COLUMNS };
