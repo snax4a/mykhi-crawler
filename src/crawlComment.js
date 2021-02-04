@@ -1,6 +1,8 @@
+const { createPage } = require('./createPage');
+
 const crawlComment = async (browser, comment) => {
   const context = await browser.createIncognitoBrowserContext();
-  const page = await context.newPage();
+  const page = await createPage(context);
 
   await page.goto(`https://pja.mykhi.org/generatory2.0/?comment=${comment}`);
 

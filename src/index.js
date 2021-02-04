@@ -5,6 +5,7 @@ const Sentry = require("@sentry/node");
 const Tracing = require("@sentry/tracing");
 require('dotenv').config()
 
+const { createPage } = require('./createPage');
 const { goToMainPage } = require('./goToMainPage');
 const { crawlSubject } = require('./crawlSubject');
 const { crawlComment } = require('./crawlComment');
@@ -25,7 +26,7 @@ const transaction = Sentry.startTransaction({
 try {
   (async () => {
     const browser = await puppeteer.launch({
-      headless: true,
+      headless: false,
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
@@ -35,7 +36,7 @@ try {
     const updatedAt = Date.now();
 
     const context = await browser.createIncognitoBrowserContext();
-    const page = await context.newPage();
+    const page = await createPage(context);
     await goToMainPage(page);
     const subjects = await page.$$eval('table .pyt .cie', ($subjects) => $subjects.map(($s) => $s.value));
     await page.close();

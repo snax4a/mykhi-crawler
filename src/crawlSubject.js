@@ -1,10 +1,11 @@
 const { getDataFromSubject } = require('./getDataFromSubject');
 const { goToSubject } = require('./goToSubject');
 const { goToMainPage } = require('./goToMainPage');
+const { createPage } = require('./createPage');
 
 const crawlSubject = async (browser, i) => {
   const context = await browser.createIncognitoBrowserContext();
-  const page = await context.newPage();
+  const page = await createPage(context);
 
   await goToMainPage(page);
 

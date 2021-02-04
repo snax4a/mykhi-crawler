@@ -17,7 +17,7 @@ const skip = [
   // "Hurtownie danych i aplikacje OLAP (HUR)",
   // "Legal foundations of business (PPB)",
 
-  "Matematyka Dyskretna - edux - 2012 ZIMA (MAD2012A)",
+  // "Matematyka Dyskretna - edux - 2012 ZIMA (MAD2012A)",
 
   // "Matematyka Dyskretna 2020 (MAD)",
   // "Modelowanie i Analiza Systemów informacyjnych (MAS)",
